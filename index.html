@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Chat Webhook Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Send Google Chat Webhook Message</h1>
+        <div id="alerts"></div>
+        <div class="col-lg-6">
+            <textarea id="text" class="form-control" placeholder="Enter message text" aria-label="Enter message text"></textarea>
+            <div class="card mt-3">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-3">
+                        <h5 class="card-title">Header</h5>
+                        <textarea id="card-0-title" class="form-control mt-2" placeholder="Enter card title" aria-label="Enter card title"></textarea>
+                        <textarea id="card-0-subtitle" class="form-control mt-2" placeholder="Enter card subtitle" aria-label="Enter card subtitle"></textarea>
+                        <input type="url" id="card-0-image-url" class="form-control mt-2" placeholder="Enter card image URL" aria-label="Enter card image URL">
+                        <select class="form-select mt-2" aria-label="Image type">
+                            <option selected disabled value="">Image type</option>
+                            <option value="IMAGE">Square</option>
+                            <option value="AVATAR">Circular</option>
+                        </select>
+                    </li>
+                    <li class="list-group-item py-3">
+
+                    </li>
+                    <li class="list-group-item py-3 d-grid">
+                        <button class="btn btn-primary" type="button" id="card-0-add-section">Add section</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-grid mt-3">
+                <button class="btn btn-primary" type="button" id="add-card-button">Add card</button>
+            </div>
+        </div>
+        <hr>
+        <div class="col-lg-6">
+
+        </div>
+        <input type="url" id="url" class="form-control" placeholder="Enter webhook URL" aria-label="Enter webhook URL">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.querySelector("form").addEventListener("submit", async e => {
+            e.preventDefault();
+
+            let success = false;
+
+            try {
+                const response = await fetch(document.querySelector("#url").value, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        text: document.querySelector("#text").value
+                    })
+                });
+                if (response.status < 400) success = true;
+            } catch {}
+
+            const alert = document.createElement("div");
+            alert.classList.add("alert", success ? "alert-success" : "alert-danger", "alert-dismissible", "fade", "show");
+            alert.setAttribute("role", "alert");
+            alert.innerHTML = `
+            ${success ? "Message sent successfully." : "Message failed to send."}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+            document.querySelector("#alerts").appendChild(alert);
+
+            if (success) document.querySelector("#text").value = "";
+        });
+    </script>
+</body>
+</html>
